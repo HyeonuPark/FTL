@@ -1,0 +1,13 @@
+[package]
+name = "ftl-macro"
+version = "0.1.0"
+authors = ["Hyeonu Park <nemo1275@gmail.com>"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+description = "Proc macros for the FTL crate"
+repository = "https://github.com/HyeonuPark/FTL"
+documentation = "https://docs.rs/ftl-macro"
+keywords = ["proc-macro", "ftl"]
+readme = "README.md"
+
+[dependencies]
