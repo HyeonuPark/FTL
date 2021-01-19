@@ -52,7 +52,7 @@ pub enum Error {
 }
 
 /// OpenAPI spec description.
-#[api(alloc_cors)]
+#[api]
 #[async_trait]
 pub trait OpenApiSpecTitle {
     /// Description about this endpoint.
@@ -86,7 +86,7 @@ pub trait OpenApiSpecTitle {
         body: FooRequest,
         // Return type should be the `Result<T, E> where E: ftl::Error`.
         // If the T is String, the Content-Type header becomes `text/plain`.
-        // Otherwise it must be `serde::Serialize + ftl::Spec`
+        // Otherwise it must be `ftl::Schema`
         // and the Content-Type becomes `application/json`.
     ) -> Result<FooResponse, Error>;
 
@@ -100,7 +100,7 @@ pub trait OpenApiSpecTitle {
     #[fallback]
     async fn handle_fallback(
         self: Arc<Self>,
-        base: BaseError,
+        error: BaseError,
     ) -> Error;
 }
 
@@ -110,11 +110,11 @@ impl OpenApiSpecTitle for App {...}
 
 #[tokio::main]
 async fn main() {
-    let app = Arc::new(App::new());
-    let spec = serde_json::to_string(&app.openapi_spec()).unwrap();
+    let spec = serde_json::to_string(&OpenApiSpecTitle()).unwrap();
 
+    let app = Arc::new(App::new());
     let addr: SocketAddr = "0.0.0.0:8080".parse().unwrap();
-    app.server().run(addr).await.expect("HTTP server terminated with error");
+    app.router().run(addr).await.expect("HTTP server terminated with error");
 }
 ```
 
@@ -122,8 +122,9 @@ async fn main() {
 
 - HTML or templating
 - Static file serving
-- Anything about the implementation, not API
 - Formats other than the JSON or the plain text
+- Streaming body
+- Non UTF-8 body
 - Nested routers
 - Define endpoints from multiple files
 
